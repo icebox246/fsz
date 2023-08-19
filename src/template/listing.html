@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <title>fsz: {[dirname]s}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script rel="stylesheet" src="/static/upload.js" defer></script>
+</head>
+<body>
+    <nav>
+        <a href="/" class="button">home</a>
+        <a href="#" class="button" id="upload-button">upload</a>
+
+        <p>fsz by <a href="https://github.com/icebox246">icebox246</a></p>
+    </nav>
+    <main>
+        <p>contents of `{[dirname]s}/`:</p>
+        <ul class="listing-container">
+            <li class="listing-item listing-item-back" x-current-dir="{[dirname]s}">
+                <a href="../" class="listing-link button">d ..</a>
+            </li>
+            {[listing]s}
+        </ul>
+    </main>
+
+    <dialog id="upload-dialog">
+        <p>upload a file<p>
+        <form id="upload-form" method="dialog">
+            <label class="button" id="upload-file-selector-label" for="upload-file-selector"></label>
+            <input id="upload-file-selector" type="file" required>
+        </form>
+        <p id="upload-error"></p>
+    </dialog>
+</body>
+</html>

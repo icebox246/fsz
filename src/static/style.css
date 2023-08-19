@@ -1,0 +1,103 @@
+@font-face {
+  font-family: "monogram";
+  src: url("/static/monogram.ttf");
+}
+
+:root {
+    --bright: #e7ffee;
+    --accent: #eda031;
+    --dark: #272946;
+}
+
+*, input {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    color: var(--dark);
+    font-weight: normal;
+}
+
+a {
+    color: var(--accent);
+}
+
+body {
+    background: var(--bright);
+    font-family: "monogram", monospace;
+    font-size: 24pt;
+}
+
+main {
+    padding: 1em;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    padding: 0.05em;
+    border-bottom: 2px var(--dark) solid;
+}
+
+[x-current-dir="."].listing-item.listing-item-back {
+    display: none;
+}
+
+.listing-container {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.listing-item {
+    display: flex;
+    width: 100%;
+}
+
+.listing-link {
+    width: 100%;
+}
+
+.button {
+    padding: 0.3em;
+    margin: 0.05em;
+    text-decoration: none;
+    background: none;
+
+    border: var(--dark) 2px solid;
+    color: var(--dark);
+}
+
+.button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.options-item {
+    display: flex;
+    align-items: center;
+}
+
+dialog {
+    padding: 1em;
+    margin: auto;
+    border: 2px solid var(--dark);
+    background: var(--bright);
+}
+
+#upload-error {
+    color: var(--accent);
+}
+
+#upload-file-selector {
+    opacity: 0;
+    width: 0;
+}
+
+#upload-form {
+    display: flex;
+}
