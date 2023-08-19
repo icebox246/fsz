@@ -44,3 +44,15 @@ upload_file_selector.addEventListener("change", e => {
 
     file_reader.readAsBinaryString(file);
 });
+
+document.addEventListener('click', e => {
+    if(!upload_dialog.open) return;
+
+    const x = e.offsetX;
+    const y = e.offsetY;
+
+    if(x < 0 || y < 0 || x > upload_dialog.scrollWidth || y > upload_dialog.scrollHeight) {
+        upload_dialog.close();
+    }
+})
+
