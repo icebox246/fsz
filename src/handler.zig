@@ -97,6 +97,9 @@ pub const Handler = struct {
             .{ .name = "monogram.ttf", .contentType = "font/ttf" },
             .{ .name = "upload.js", .contentType = "text/javascript" },
             .{ .name = "delete.js", .contentType = "text/javascript" },
+            .{ .name = "icons_file.webp", .contentType = "image/webp" },
+            .{ .name = "icons_folder.webp", .contentType = "image/webp" },
+            .{ .name = "icons_trash.webp", .contentType = "image/webp" },
         };
 
         const requested_resource = url_blocks.blocks[1];

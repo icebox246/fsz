@@ -66,6 +66,8 @@ nav {
 
     border: var(--dark) 2px solid;
     color: var(--dark);
+
+    transition: border-color 200ms ease-in-out, color 200ms ease-in-out;
 }
 
 .button:hover {
@@ -109,4 +111,31 @@ dialog {
     outline: none;
     border: var(--accent) 2px solid;
     color: var(--accent);
+}
+
+.icon-f {
+    display: inline-block;
+    background-image: url("/static/icons_file.webp");
+    background-size: cover;
+    image-rendering: pixelated;
+    height: 0.5em;
+    width: 0.5em;
+}
+
+.icon-d {
+    display: inline-block;
+    background-image: url("/static/icons_folder.webp");
+    background-size: cover;
+    image-rendering: pixelated;
+    height: 0.5em;
+    width: 0.5em;
+}
+
+.icon-t {
+    display: inline-block;
+    background-image: url("/static/icons_trash.webp");
+    background-size: cover;
+    image-rendering: pixelated;
+    height: 0.5em;
+    width: 0.5em;
 }
