@@ -66,6 +66,7 @@ nav {
     margin: 0.05em;
     text-decoration: none;
     background: none;
+    cursor: pointer;
 
     border: var(--dark) 2px solid;
     color: var(--dark);
