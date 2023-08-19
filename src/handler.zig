@@ -25,6 +25,7 @@ pub const Handler = struct {
         (switch (req.method) {
             .get => self.handleGet(req, res, &url_blocks),
             .post => self.handlePost(req, res, &url_blocks),
+            .delete => self.handleDelete(req, res, &url_blocks),
         }) catch |e| switch (e) {
             Error.not_found => try self.handleNotFound(req, res),
             Error.forbidden => try self.handleForbidden(req, res),
@@ -50,9 +51,21 @@ pub const Handler = struct {
         std.debug.print("Received: POST {}\n", .{url_blocks});
 
         if (url_blocks.blocks.len == 0) {
-            return Error.not_found;
+            return Error.forbidden;
         } else if (std.mem.eql(u8, url_blocks.blocks[0], "f")) {
             try self.handlePostFiles(req, res, url_blocks);
+        } else {
+            return Error.forbidden;
+        }
+    }
+
+    fn handleDelete(self: *@This(), req: *Request, res: *Response, url_blocks: *url.UrlBlocks) !void {
+        std.debug.print("Received: DELETE {}\n", .{url_blocks});
+
+        if (url_blocks.blocks.len == 0) {
+            return Error.not_found;
+        } else if (std.mem.eql(u8, url_blocks.blocks[0], "f")) {
+            try self.handleDeleteFiles(req, res, url_blocks);
         } else {
             return Error.not_found;
         }
@@ -83,6 +96,7 @@ pub const Handler = struct {
             .{ .name = "style.css", .contentType = "text/css" },
             .{ .name = "monogram.ttf", .contentType = "font/ttf" },
             .{ .name = "upload.js", .contentType = "text/javascript" },
+            .{ .name = "delete.js", .contentType = "text/javascript" },
         };
 
         const requested_resource = url_blocks.blocks[1];
@@ -109,7 +123,7 @@ pub const Handler = struct {
         const path = try self.sanitizePath(original_path);
         defer self.allocator.free(path);
 
-        var current_dir = try self.openDirByPath(if (path.len > 0) path[0 .. path.len - 1] else path);
+        var current_dir = try self.openDirByPath(if (path.len > 0) path[0 .. path.len - 1] else path, false);
         defer current_dir.close();
 
         const resource_name = if (path.len > 0) path[path.len - 1] else ".";
@@ -166,9 +180,7 @@ pub const Handler = struct {
 
                 try res.finish();
             },
-            else => {
-                return Error.not_found;
-            },
+            else => return Error.forbidden,
         }
     }
 
@@ -181,7 +193,7 @@ pub const Handler = struct {
         const path = try self.sanitizePath(original_path);
         defer self.allocator.free(path);
 
-        var current_dir = try self.openDirByPath(path[0 .. path.len - 1]);
+        var current_dir = try self.openDirByPath(path[0 .. path.len - 1], true);
         defer current_dir.close();
 
         const resource_name = path[path.len - 1];
@@ -215,6 +227,38 @@ pub const Handler = struct {
         try res.finish();
     }
 
+    fn handleDeleteFiles(self: *@This(), req: *Request, res: *Response, url_blocks: *url.UrlBlocks) !void {
+        _ = req;
+
+        const original_path = url_blocks.blocks[1..];
+
+        if (original_path.len == 0) return Error.forbidden;
+
+        const path = try self.sanitizePath(original_path);
+        defer self.allocator.free(path);
+
+        var current_dir = try self.openDirByPath(path[0 .. path.len - 1], false);
+        defer current_dir.close();
+
+        const resource_name = path[path.len - 1];
+
+        const stat = current_dir.statFile(resource_name) catch return Error.not_found;
+
+        switch (stat.kind) {
+            .file => current_dir.deleteFile(resource_name) catch return Error.not_found,
+            .directory => current_dir.deleteDir(resource_name) catch |e| switch (e) {
+                std.fs.Dir.DeleteDirError.DirNotEmpty => return Error.forbidden,
+                else => return Error.not_found,
+            },
+            else => return Error.forbidden,
+        }
+
+        try res.status(200, "OK");
+        try res.contentType("text/plain");
+        try res.data("Successful upload\n");
+        try res.finish();
+    }
+
     fn sanitizePath(self: *@This(), original_path: [][]const u8) ![][]const u8 {
         var path_temp = std.ArrayList([]const u8).init(self.allocator);
 
@@ -233,15 +277,24 @@ pub const Handler = struct {
         return path;
     }
 
-    fn openDirByPath(self: *@This(), path: [][]const u8) !std.fs.Dir {
+    fn openDirByPath(self: *@This(), path: [][]const u8, create_progressively: bool) !std.fs.Dir {
         _ = self;
         var current_dir = std.fs.cwd().openDir("fs", .{}) catch return Error.not_found;
 
         if (path.len > 0) {
             for (path[0..path.len]) |name| {
-                const next_dir = current_dir.openDir(name, .{}) catch return Error.not_found;
-                current_dir.close();
-                current_dir = next_dir;
+                const next_dir_or_error = current_dir.openDir(name, .{});
+                if (next_dir_or_error) |next_dir| {
+                    current_dir.close();
+                    current_dir = next_dir;
+                } else |err| {
+                    if (create_progressively and err == std.fs.Dir.OpenError.FileNotFound) {
+                        try current_dir.makeDir(name);
+                        const next_dir = current_dir.openDir(name, .{}) catch return Error.not_found;
+                        current_dir.close();
+                        current_dir = next_dir;
+                    } else return Error.not_found;
+                }
             }
         }
 

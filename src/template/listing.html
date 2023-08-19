@@ -7,6 +7,7 @@
     <title>fsz: {[dirname]s}</title>
     <link rel="stylesheet" href="/static/style.css">
     <script rel="stylesheet" src="/static/upload.js" defer></script>
+    <script rel="stylesheet" src="/static/delete.js" defer></script>
 </head>
 <body>
     <nav>
@@ -26,8 +27,9 @@
     </main>
 
     <dialog id="upload-dialog">
-        <p>upload a file<p>
         <form id="upload-form" method="dialog">
+            <label id="upload-file-path-selector-label" for="upload-file-path-selector">upload to:</label>
+            <input class="button" id="upload-file-path-selector" type="text" required>
             <label class="button" id="upload-file-selector-label" for="upload-file-selector"></label>
             <input id="upload-file-selector" type="file" required>
         </form>

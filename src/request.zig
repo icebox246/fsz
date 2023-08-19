@@ -16,11 +16,14 @@ pub const Request = struct {
     pub const Method = enum {
         get,
         post,
+        delete,
         fn fromStr(str: []const u8) !@This() {
             if (std.ascii.eqlIgnoreCase("get", str)) {
                 return .get;
             } else if (std.ascii.eqlIgnoreCase("post", str)) {
                 return .post;
+            } else if (std.ascii.eqlIgnoreCase("delete", str)) {
+                return .delete;
             } else {
                 return Error.unknown_method;
             }
