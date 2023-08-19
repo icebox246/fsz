@@ -27,7 +27,7 @@ pub const Handler = struct {
             .post => self.handlePost(req, res, &url_blocks),
             .delete => self.handleDelete(req, res, &url_blocks),
         }) catch |e| switch (e) {
-            Error.not_found => try self.handleNotFound(req, res),
+            Error.not_found => try self.handleNotFound(req, res, &url_blocks),
             Error.forbidden => try self.handleForbidden(req, res),
             else => return e,
         };
@@ -304,13 +304,14 @@ pub const Handler = struct {
         return current_dir;
     }
 
-    fn handleNotFound(self: *@This(), req: *Request, res: *Response) !void {
+    fn handleNotFound(self: *@This(), req: *Request, res: *Response, url_blocks: *url.UrlBlocks) !void {
         _ = req;
         _ = self;
 
         try res.status(404, "Not Found");
         try res.contentType("text/html");
-        try res.data("<h1>Not found!</h1>");
+        const writer = try res.dataWriter();
+        try writer.print(@embedFile("template/404.html"), .{ .path = url_blocks });
         try res.finish();
     }
 
