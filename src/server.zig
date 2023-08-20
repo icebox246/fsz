@@ -10,6 +10,7 @@ pub fn Server(comptime Handler: type) type {
 
         pub const ServerOptions = struct {
             address: std.net.Address = std.net.Address.initIp4([4]u8{ 127, 0, 0, 1 }, 5000),
+            handler_opts: Handler.Options,
         };
 
         pub fn init(allocator: std.mem.Allocator, options: ServerOptions) !@This() {
@@ -21,7 +22,7 @@ pub fn Server(comptime Handler: type) type {
             });
             try server.listen(address);
 
-            var handler = try Handler.init(allocator);
+            var handler = try Handler.init(allocator, options.handler_opts);
 
             return .{
                 .stream_server = server,

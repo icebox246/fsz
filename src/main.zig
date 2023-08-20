@@ -23,6 +23,7 @@ pub fn main() !void {
 
     var server_ip: []const u8 = "127.0.0.1";
     var server_port: u16 = 5000;
+    var root_dir: ?[]const u8 = null;
 
     while (args_iter.next()) |arg| {
         if (std.mem.eql(u8, arg, "-l")) {
@@ -33,13 +34,18 @@ pub fn main() !void {
             if (args_iter.next()) |port_raw| {
                 server_port = try std.fmt.parseInt(u16, port_raw, 10);
             } else return Error.expected_port_in_next_arg;
+        } else if (root_dir == null) {
+            root_dir = arg;
         } else {
             return Error.unknown_arg;
         }
     }
 
+    if (root_dir == null) root_dir = ".";
+
     var server = try Server(Handler).init(allocator, .{
         .address = try std.net.Address.resolveIp(server_ip, server_port),
+        .handler_opts = .{ .root_dir = root_dir.? },
     });
     defer server.deinit();
 

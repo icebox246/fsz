@@ -5,12 +5,18 @@ const url = @import("url.zig");
 
 pub const Handler = struct {
     allocator: std.mem.Allocator,
+    root_dir: []const u8,
 
     const Error = error{ not_found, forbidden };
 
-    pub fn init(allocator: std.mem.Allocator) !@This() {
+    pub const Options = struct {
+        root_dir: []const u8,
+    };
+
+    pub fn init(allocator: std.mem.Allocator, options: Options) !@This() {
         return .{
             .allocator = allocator,
+            .root_dir = options.root_dir,
         };
     }
 
@@ -281,8 +287,7 @@ pub const Handler = struct {
     }
 
     fn openDirByPath(self: *@This(), path: [][]const u8, create_progressively: bool) !std.fs.Dir {
-        _ = self;
-        var current_dir = std.fs.cwd().openDir("fs", .{}) catch return Error.not_found;
+        var current_dir = std.fs.cwd().openDir(self.root_dir, .{}) catch return Error.not_found;
 
         if (path.len > 0) {
             for (path[0..path.len]) |name| {
