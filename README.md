@@ -1,5 +1,9 @@
 # fsz
 
+[![check](https://github.com/icebox246/fsz/actions/workflows/check.yml/badge.svg)](https://github.com/icebox246/fsz/actions/workflows/check.yml)
+
+[![deploy](https://github.com/icebox246/fsz/actions/workflows/deploy.yml/badge.svg)](https://github.com/icebox246/fsz/actions/workflows/deploy.yml)
+
 Simple remote file browser written in [Zig](https://ziglang.org/).
 
 # Building
