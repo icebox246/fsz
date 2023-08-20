@@ -117,29 +117,32 @@ dialog {
     color: var(--accent);
 }
 
-.icon-f {
+.icon-f::before {
+    content: "ff";
     display: inline-block;
     background-image: url("/static/icons_file.webp");
-    background-size: cover;
+    background-size: 0.75em;
+    background-position: bottom;
     image-rendering: pixelated;
-    height: 0.5em;
-    width: 0.5em;
+    color: transparent;
 }
 
-.icon-d {
+.icon-d::before {
+    content: "ff";
     display: inline-block;
     background-image: url("/static/icons_folder.webp");
-    background-size: cover;
+    background-size: 0.75em;
+    background-position: bottom;
     image-rendering: pixelated;
-    height: 0.5em;
-    width: 0.5em;
+    color: transparent;
 }
 
-.icon-t {
+.icon-t::before {
+    content: "ff";
     display: inline-block;
     background-image: url("/static/icons_trash.webp");
-    background-size: cover;
+    background-size: 0.75em;
+    background-position: bottom;
     image-rendering: pixelated;
-    height: 0.5em;
-    width: 0.5em;
+    color: transparent;
 }
