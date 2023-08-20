@@ -16,7 +16,7 @@ async function sleep(duration) {
         console.info("| Starting fsz |");
         console.info("================");
 
-        execSync(`bin/fsz -l 0.0.0.0 -p ${process.env.PORT || 5000}`, { stdio: 'inherit' });
+        execSync(`bin/fsz -l 0.0.0.0 -p ${process.env.PORT || 5000} fs/`, { stdio: 'inherit' });
 
         await sleep(3000);
     }
