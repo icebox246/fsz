@@ -19,7 +19,7 @@ zig build
 # build project and run unit tests
 zig build test
 
- build project and run it
+# build project and run it
 zig build run
 ```
 
