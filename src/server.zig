@@ -2,16 +2,18 @@ const std = @import("std");
 const Request = @import("request.zig").Request;
 const Response = @import("response.zig").Response;
 
-const default_address = std.net.Address.initIp4([4]u8{ 127, 0, 0, 1 }, 5000);
-
 pub fn Server(comptime Handler: type) type {
     return struct {
         stream_server: std.net.StreamServer,
         allocator: std.mem.Allocator,
         handler: Handler,
 
-        pub fn init(allocator: std.mem.Allocator) !@This() {
-            const address = default_address;
+        pub const ServerOptions = struct {
+            address: std.net.Address = std.net.Address.initIp4([4]u8{ 127, 0, 0, 1 }, 5000),
+        };
+
+        pub fn init(allocator: std.mem.Allocator, options: ServerOptions) !@This() {
+            const address = options.address;
 
             var server = std.net.StreamServer.init(.{
                 .reuse_address = true,
