@@ -23,6 +23,8 @@ jobs:
       - name: Deploy to glitch with git
         working-directory: ./runner
         run: |
+          git config --global user.email "auto@deployer.noreply"
+          git config --global user.name "GitHub Actions automatic deployer"
           git init
           git remote add dest "https://$GLITCH_TOKEN@api.glitch.com/git/$GLITCH_PROJECT"
           git add . 
