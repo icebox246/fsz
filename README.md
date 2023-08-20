@@ -29,3 +29,14 @@ In a glitch project run commands in terminal:
 git config receive.denyCurrentBranch updateInstead
 echo refresh > .git/hooks/post-receive && chmod u+x .git/hooks/post-receive
 ```
+
+## GitHub Actions setup
+
+Provide secrets:
+
+- `GLITCH_PROJECT` - name of you target glitch project
+- `GLITCH_TOKEN` - token from your glitch git url
+
+The can be found in `Tools > Import/Export > Your project's Git URL`, where git
+url is in format: `https://GLITCH_TOKEN@api.glitch.com/git/GLITCH_PROJECT`.
+
