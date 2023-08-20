@@ -23,6 +23,25 @@ zig build test
 zig build run
 ```
 
+# Installation
+
+```shell
+# install at ~/.local/bin
+zig build -Doptimize=ReleaseSafe -p ~/.local
+```
+
+If you want to install `fsz` system-wide substitute `~/.local` with `/usr` 
+and run this command with elevated privileges.
+
+## Uninstalling
+
+```shell
+# uninstall from ~/.local/bin
+zig build uninstall -p ~/.local
+```
+
+Note: use the same prefix as during installation.
+
 # Deploying
 
 This project is designed to be deployed on [glitch.com](https://glitch.com/)
