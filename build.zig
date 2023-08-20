@@ -35,4 +35,19 @@ pub fn build(b: *std.Build) void {
 
     const test_step = b.step("test", "Run unit tests");
     test_step.dependOn(&run_unit_tests.step);
+
+    const fmt_cmd = b.addFmt(.{
+        .paths = &.{"src/"},
+    });
+
+    const fmt_step = b.step("fmt", "Format codebase");
+    fmt_step.dependOn(&fmt_cmd.step);
+
+    const check_fmt_cmd = b.addFmt(.{
+        .paths = &.{"src/"},
+        .check = true,
+    });
+
+    const check_fmt_step = b.step("check-fmt", "Check formatting of codebase");
+    check_fmt_step.dependOn(&check_fmt_cmd.step);
 }
