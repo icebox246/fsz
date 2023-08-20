@@ -2,6 +2,8 @@ const std = @import("std");
 const Server = @import("server.zig").Server;
 const Handler = @import("handler.zig").Handler;
 
+pub const url = @import("url.zig");
+
 const Error = error{
     expected_ip_in_next_arg,
     expected_port_in_next_arg,
@@ -46,4 +48,8 @@ pub fn main() !void {
     while (true) {
         try server.accept(allocator);
     }
+}
+
+test {
+    std.testing.refAllDecls(@This());
 }
