@@ -6,6 +6,8 @@
 
 Simple remote file browser written in [Zig](https://ziglang.org/).
 
+Demo available at: [fsz-demo.glitch.me](https://fsz-demo.glitch.me/).
+
 # Building
 
 This project requires `zig` version `0.11.0`.
@@ -43,4 +45,3 @@ Provide secrets:
 
 The can be found in `Tools > Import/Export > Your project's Git URL`, where git
 url is in format: `https://GLITCH_TOKEN@api.glitch.com/git/GLITCH_PROJECT`.
-
