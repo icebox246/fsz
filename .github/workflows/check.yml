@@ -1,0 +1,28 @@
+name: check
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup zig
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: 0.11.0
+
+      - name: Check codebase formatting
+        run: zig build check-fmt
+
+      - name: Check whether codebase compiles
+        run: zig build -Dtarget=x86_64-linux
+
+      - name: Run unit tests
+        run: zig build test
