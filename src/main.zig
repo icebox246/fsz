@@ -10,6 +10,25 @@ const Error = error{
     unknown_arg,
 };
 
+fn showHelp() void {
+    std.debug.print(
+        \\help: fsz [OPTIONS] [ROOT]
+        \\
+        \\OPTIONS:
+        \\  -h         - display this message
+        \\  -l IP      - set ip listen to listen on, default: 127.0.0.1
+        \\  -p PORT    - set port to listen on, default: 5000
+        \\
+        \\ROOT:
+        \\  Path to directory which will be treated as root of file system.
+        \\    Default is `.`
+        \\
+        \\example:
+        \\  fsz -l 0.0.0.0 -p 3030 files/
+        \\
+    , .{});
+}
+
 pub fn main() !void {
     std.debug.print("Hello, {s}!\n", .{"fsz"});
 
@@ -34,6 +53,9 @@ pub fn main() !void {
             if (args_iter.next()) |port_raw| {
                 server_port = try std.fmt.parseInt(u16, port_raw, 10);
             } else return Error.expected_port_in_next_arg;
+        } else if (std.mem.eql(u8, arg, "-h")) {
+            showHelp();
+            std.process.exit(0);
         } else if (root_dir == null) {
             root_dir = arg;
         } else {
