@@ -108,7 +108,7 @@ pub const Handler = struct {
             if (std.mem.eql(u8, resource.name, requested_resource)) {
                 try res.status(200, "OK");
                 try res.contentType(resource.contentType);
-                try res.header("cache-control", "public, max-age=120");
+                try res.header("cache-control", "public, max-age=3600");
                 try res.data(@embedFile("static/" ++ resource.name));
                 try res.finish();
                 return;
