@@ -6,7 +6,7 @@ pub fn Server(comptime Handler: type) type {
     return struct {
         stream_server: std.net.StreamServer,
         allocator: std.mem.Allocator,
-        handler: Handler,
+        handler_opts: Handler.Options,
 
         pub const ServerOptions = struct {
             address: std.net.Address = std.net.Address.initIp4([4]u8{ 127, 0, 0, 1 }, 5000),
@@ -22,25 +22,42 @@ pub fn Server(comptime Handler: type) type {
             });
             try server.listen(address);
 
-            var handler = try Handler.init(allocator, options.handler_opts);
-
             return .{
                 .stream_server = server,
                 .allocator = allocator,
-                .handler = handler,
+                .handler_opts = options.handler_opts,
             };
         }
 
         pub fn deinit(self: *@This()) void {
             self.stream_server.deinit();
-            self.handler.deinit();
         }
 
-        pub fn accept(self: *@This(), allocator: std.mem.Allocator) !void {
+        pub fn accept(self: *@This()) !void {
             const conn = try self.stream_server.accept();
+            if (!@import("builtin").single_threaded) {
+                const thread = try std.Thread.spawn(.{}, handlerWrapper, .{
+                    conn,
+                    self.allocator,
+                    &self.handler_opts,
+                });
+                thread.detach();
+            } else {
+                try handlerWrapper(conn, self.allocator, &self.handler_opts);
+            }
+        }
+
+        fn handlerWrapper(conn: std.net.StreamServer.Connection, parent_allocator: std.mem.Allocator, handler_opts: *const Handler.Options) !void {
+            var arena = std.heap.ArenaAllocator.init(parent_allocator);
+            defer arena.deinit();
+            var allocator = arena.allocator();
+
             defer conn.stream.close();
 
             var response = Response.init(conn);
+
+            var handler = try Handler.init(allocator, handler_opts.*);
+            defer handler.deinit();
 
             var reader = conn.stream.reader();
             var request = Request.parseStreaming(allocator, reader) catch |e| switch (e) {
@@ -62,7 +79,7 @@ pub fn Server(comptime Handler: type) type {
             };
             defer request.deinit(allocator);
 
-            try self.handler.handle(&request, &response);
+            try handler.handle(&request, &response);
         }
     };
 }
