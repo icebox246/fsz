@@ -52,7 +52,7 @@ pub fn Server(comptime Handler: type) type {
                     return;
                 },
                 else => |ex| {
-                    try response.status(400, "Internal Error");
+                    try response.status(500, "Internal Error");
                     try response.contentType("text/html");
                     var writer = try response.dataWriter();
                     try writer.print("<h1>Internal Error: {}</h1>", .{ex});
