@@ -74,7 +74,7 @@ pub fn main() !void {
     std.debug.print("Listening on http://{}...\n", .{server.stream_server.listen_address});
 
     while (true) {
-        try server.accept(allocator);
+        try server.accept();
     }
 }
 
