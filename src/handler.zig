@@ -158,6 +158,13 @@ pub const Handler = struct {
                     try res.header("Content-Length", buffer.items);
                 }
 
+                {
+                    var buffer = try std.ArrayList(u8).initCapacity(self.allocator, 256);
+                    defer buffer.deinit();
+                    try std.fmt.format(buffer.writer(), "inline; filename={s}", .{resource_name});
+                    try res.header("Content-Disposition", buffer.items);
+                }
+
                 var buffer: [4096]u8 = undefined;
                 var bytes_read: usize = undefined;
                 while (true) {
