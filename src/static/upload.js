@@ -7,14 +7,16 @@ const upload_file_selector_label = document.getElementById("upload-file-selector
 const upload_error = document.getElementById("upload-error");
 const upload_status = document.getElementById("upload-status");
 
-function set_upload_status(status, file) {
+let currently_uploading = false;
+
+function set_upload_status(status, file, extra) {
     if (status == "progress") {
         upload_status.classList.remove("error");
-        upload_status.innerText = `uploading: ${file}...`
+        upload_status.innerText = `uploading: ${file} (${extra})...`
     }
     if (status == "fail") {
         upload_status.classList.add("error");
-        upload_status.innerText = `failed to upload: ${file} :(`
+        upload_status.innerText = `failed to upload: ${file} (${extra}) :(`
     }
     if (status == "finished") {
         upload_status.classList.remove("error");
@@ -24,6 +26,7 @@ function set_upload_status(status, file) {
 
 upload_button.addEventListener('click', e => {
     e.preventDefault();
+    if (currently_uploading) return;
     upload_error.innerText = "";
     upload_file_selector_label.innerText = "Select file...";
     upload_file_path_selector.value = location.pathname.substring(2);
@@ -47,19 +50,30 @@ upload_file_selector.addEventListener("change", e => {
 
         const encoded = btoa(data) + "\0";
 
-        set_upload_status("progress", file.name);
+        const xhr = new XMLHttpRequest();
 
-        fetch("/f/" + upload_file_path_selector.value + "/" + file.name, { method: "POST", body: encoded }).then(async e => {
-            if (e.status == 200) {
+        xhr.upload.addEventListener("progress", e => {
+            const progress = e.loaded / e.total;
+            const percent = ~~(100 * progress) + "%"
+            set_upload_status("progress", file.name, percent);
+        })
+
+        xhr.addEventListener("loadend", () => {
+            if (xhr.status == 200) {
                 set_upload_status("finished", file.name);
                 location.reload();
             } else {
-                set_upload_status("fail", file.name);
+                set_upload_status("fail", file.name, xhr.status);
                 upload_error.innerText = "upload failed";
             }
-        }).catch(() => {
-            set_upload_status("fail", file.name);
-        });
+            currently_uploading = false;
+        })
+
+        xhr.open("POST", "/f/" + upload_file_path_selector.value + "/" + file.name);
+
+        xhr.send(encoded);
+
+        currently_uploading = true;
     });
 
     file_reader.readAsBinaryString(file);
