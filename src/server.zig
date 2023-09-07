@@ -79,7 +79,8 @@ pub fn Server(comptime Handler: type) type {
             };
             defer request.deinit(allocator);
 
-            try handler.handle(&request, &response);
+            handler.handle(&request, &response) catch |e|
+                std.debug.print("ERROR: Handler crashed with exception: {}\n", .{e});
         }
     };
 }
