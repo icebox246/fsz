@@ -84,7 +84,7 @@ pub const Request = struct {
 
         if (method == .post) {
             var body_buffer = std.ArrayList(u8).init(allocator);
-            try reader.streamUntilDelimiter(body_buffer.writer(), 0, 4 * 1024 * 1024);
+            try reader.streamUntilDelimiter(body_buffer.writer(), 0, 128 * 1024 * 1024);
             request.body_raw = try body_buffer.toOwnedSlice();
         }
         return request;
