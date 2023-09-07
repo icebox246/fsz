@@ -125,6 +125,19 @@ dialog {
     color: var(--accent);
 }
 
+#upload-status {
+    position: fixed;
+    bottom: 0;
+    background: var(--bright);
+    padding: 0.5em;
+    border-top: 2px var(--dark) solid;
+    width: 100%;
+}
+
+#upload-status.error {
+    color: var(--accent);
+}
+
 .icon-f::before {
     content: "ff";
     display: inline-block;

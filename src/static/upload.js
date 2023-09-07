@@ -5,6 +5,22 @@ const upload_file_path_selector = document.getElementById("upload-file-path-sele
 const upload_file_selector = document.getElementById("upload-file-selector");
 const upload_file_selector_label = document.getElementById("upload-file-selector-label");
 const upload_error = document.getElementById("upload-error");
+const upload_status = document.getElementById("upload-status");
+
+function set_upload_status(status, file) {
+    if (status == "progress") {
+        upload_status.classList.remove("error");
+        upload_status.innerText = `uploading: ${file}...`
+    }
+    if (status == "fail") {
+        upload_status.classList.add("error");
+        upload_status.innerText = `failed to upload: ${file} :(`
+    }
+    if (status == "finished") {
+        upload_status.classList.remove("error");
+        upload_status.innerText = `finished uploading: ${file} :)`
+    }
+}
 
 upload_button.addEventListener('click', e => {
     e.preventDefault();
@@ -31,14 +47,18 @@ upload_file_selector.addEventListener("change", e => {
 
         const encoded = btoa(data) + "\0";
 
+        set_upload_status("progress", file.name);
+
         fetch("/f/" + upload_file_path_selector.value + "/" + file.name, { method: "POST", body: encoded }).then(async e => {
             if (e.status == 200) {
+                set_upload_status("finished", file.name);
                 location.reload();
             } else {
+                set_upload_status("fail", file.name);
                 upload_error.innerText = "upload failed";
             }
-        }).catch(e => {
-            alert(e);
+        }).catch(() => {
+            set_upload_status("fail", file.name);
         });
     });
 
@@ -46,12 +66,12 @@ upload_file_selector.addEventListener("change", e => {
 });
 
 document.addEventListener('click', e => {
-    if(!upload_dialog.open) return;
+    if (!upload_dialog.open) return;
 
     const x = e.offsetX;
     const y = e.offsetY;
 
-    if(x < 0 || y < 0 || x > upload_dialog.scrollWidth || y > upload_dialog.scrollHeight) {
+    if (x < 0 || y < 0 || x > upload_dialog.scrollWidth || y > upload_dialog.scrollHeight) {
         upload_dialog.close();
     }
 })
