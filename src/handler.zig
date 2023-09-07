@@ -147,6 +147,17 @@ pub const Handler = struct {
                 try res.status(200, "OK");
                 try res.contentType("text/plain");
 
+                try file.seekFromEnd(0);
+                const file_size = try file.getPos();
+                try file.seekTo(0);
+
+                {
+                    var buffer = try std.ArrayList(u8).initCapacity(self.allocator, 32);
+                    defer buffer.deinit();
+                    try std.fmt.format(buffer.writer(), "{}", .{file_size});
+                    try res.header("Content-Length", buffer.items);
+                }
+
                 var buffer: [4096]u8 = undefined;
                 var bytes_read: usize = undefined;
                 while (true) {
